@@ -2,6 +2,7 @@ name: "build-test"
 
 permissions:
   contents: read
+  deployments: write
 
 on: # rebuild any PRs and main branch changes
   pull_request:
