@@ -6,11 +6,9 @@ import nock from "nock";
 const postStatusReply = {} as any
 
 describe('complete', () => {
-  const originalEnv = process.env
+  const originalEnv = { ...process.env }
 
   beforeEach(() => {
-    process.env = { ...originalEnv };
-
     process.env["STATE_deployment_id"] = "42";
 
     let inputs = {} as any;
@@ -26,15 +24,20 @@ describe('complete', () => {
     inputSpy = jest.spyOn(core, "getInput");
     inputSpy.mockImplementation((name) => inputs[name]);
 
-    // @actions/github Context
-    process.env["GITHUB_ACTOR"] = "Fake-Actor";
-    process.env["GITHUB_REF"] = "refs/heads/master";
-    process.env["GITHUB_SHA"] = "fake-sha-123";
-    process.env["GITHUB_REPOSITORY"] = "owner/repo";
+    // @actions/github Context is hydrated from these environment variables
+    process.env.GITHUB_ACTOR = 'Fake-Actor'
+    process.env.GITHUB_REF = 'refs/heads/master'
+    process.env.GITHUB_SHA = 'fake-sha-123'
+    process.env.GITHUB_REPOSITORY = 'owner/repo'
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    for (const key of Object.keys(process.env)) {
+      if (!(key in originalEnv)) {
+        delete process.env[key]
+      }
+    }
+    Object.assign(process.env, originalEnv)
 
     jest.resetAllMocks();
     jest.clearAllMocks();
