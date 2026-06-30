@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import * as github from '@actions/github'
 import * as main from '../src/main'
 
 import nock from "nock";
@@ -23,17 +22,11 @@ describe('complete', () => {
     inputSpy = jest.spyOn(core, "getInput");
     inputSpy.mockImplementation((name) => inputs[name]);
 
-    // @actions/github
-    Object.defineProperty(github.context, "actor", { get: () => "Fake-Actor" });
-    Object.defineProperty(github.context, "ref", {
-      get: () => "refs/heads/master",
-    });
-    Object.defineProperty(github.context, "sha", { get: () => "fake-sha-123" });
-    Object.defineProperty(github.context, "repo", {
-      get: () => {
-        return { owner: "owner", repo: "repo" };
-      },
-    });
+    // @actions/github Context
+    process.env["GITHUB_ACTOR"] = "Fake-Actor";
+    process.env["GITHUB_REF"] = "refs/heads/master";
+    process.env["GITHUB_SHA"] = "fake-sha-123";
+    process.env["GITHUB_REPOSITORY"] = "owner/repo";
   });
 
   afterEach(() => {
