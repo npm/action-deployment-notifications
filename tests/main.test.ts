@@ -6,7 +6,11 @@ import nock from "nock";
 const postStatusReply = {} as any
 
 describe('complete', () => {
+  const originalEnv = process.env
+
   beforeEach(() => {
+    process.env = { ...originalEnv };
+
     process.env["STATE_deployment_id"] = "42";
 
     let inputs = {} as any;
@@ -30,6 +34,8 @@ describe('complete', () => {
   });
 
   afterEach(() => {
+    process.env = originalEnv;
+
     jest.resetAllMocks();
     jest.clearAllMocks();
   });
