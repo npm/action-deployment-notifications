@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import * as github from '@actions/github'
+import { Context } from '@actions/github/lib/context'
 import { DeploymentStatus, getInput, getEnvironment, postSlackNotification } from './utils'
 
 export async function run (): Promise<void> {
@@ -10,14 +10,15 @@ export async function run (): Promise<void> {
   let deploymentConfidenceUrl: string
   let currentSha: string
 
-  const { actor, ref, repo, sha } = github.context
+  const context = new Context()
+  const { actor, ref, repo, sha } = context
 
   console.log('### post.context ###')
   console.log(`actor: ${actor}`)
   console.log(`ref: ${ref}`)
   console.log(`owner: ${repo.owner}`)
   console.log(`repo: ${repo.repo}`)
-  console.log(`compare: ${github.context.payload.compare as string}`)
+  console.log(`compare: ${context.payload.compare as string}`)
   console.log(`new_sha: ${sha}`)
   console.log('\n')
 
@@ -52,7 +53,7 @@ export async function run (): Promise<void> {
   console.log(`status: ${status}`)
 
   // Post Slack notification
-  await postSlackNotification(slackToken, slackChannel, environment, status, github.context, deploymentConfidenceUrl, currentSha)
+  await postSlackNotification(slackToken, slackChannel, environment, status, context, deploymentConfidenceUrl, currentSha)
 }
 
 if (process.env.NODE_ENV !== 'test') run() // eslint-disable-line @typescript-eslint/no-floating-promises
